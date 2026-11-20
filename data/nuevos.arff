@@ -1,0 +1,25 @@
+@relation nuevos
+@attribute Order_Hour numeric
+@attribute Day_of_Week {Tuesday,Friday,Sunday,Wednesday,Monday,Thursday,Saturday}
+@attribute Is_Weekend numeric
+@attribute Is_Festival numeric
+@attribute Weather {Clear,Rain,Cloudy,Storm,Fog}
+@attribute Pickup_Zone {CBD,Residential,Industrial,Commercial,Suburban}
+@attribute Dropoff_Zone {Commercial,CBD,Residential,Industrial,Suburban}
+@attribute Vehicle_Type {Scooter,Bike,'Electric Scooter',Bicycle}
+@attribute Rider_Experience_Years numeric
+@attribute Rider_Rating numeric
+@attribute Restaurant_Rating numeric
+@attribute Cuisine_Type {Pizza,Desserts,Biryani,Burger,'South Indian',Bakery,'North Indian',Cafe,Chinese}
+@attribute Order_Items numeric
+@attribute Restaurant_Load {Medium,Low,High}
+@attribute Preparation_Time_Min numeric
+@attribute Road_Distance_km numeric
+@attribute Traffic_Level {Moderate,Low,High,Severe}
+@attribute Number_of_Signals numeric
+@attribute Delivery_Priority {Normal,VIP,Priority}
+@attribute Time_taken_min numeric
+@data
+13,Wednesday,0,0,Clear,Commercial,Residential,Bike,5,4.5,4.3,Burger,2,Low,15,8,Low,4,Normal,?
+20,Friday,0,0,Rain,CBD,Suburban,Scooter,3,4.0,4.1,Pizza,3,High,30,25,High,12,Normal,?
+19,Saturday,1,1,Storm,Residential,Industrial,Bicycle,1,3.7,4.0,Biryani,5,High,35,40,Severe,15,Priority,?

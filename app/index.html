@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Estimador de Entregas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f6f4ef;--card:#fff;--ink:#1d2433;--muted:#5d6678;--line:#e3dfd5;--accent:#c2410c;--accent-soft:#fdeee6;--ok:#15803d;--warn:#b45309;--warn-soft:#fef3e2}
+@media (prefers-color-scheme:dark){:root{--bg:#14161b;--card:#1d2027;--ink:#eceae4;--muted:#a1a6b2;--line:#2e323b;--accent:#fb923c;--accent-soft:#3a2416;--ok:#4ade80;--warn:#fbbf24;--warn-soft:#3a2c12}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif;line-height:1.5}
+header{max-width:1100px;margin:0 auto;padding:32px 16px 8px}
+.tag{display:inline-block;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);background:var(--accent-soft);padding:4px 10px;border-radius:99px}
+h1{font-size:clamp(26px,4vw,38px);margin:12px 0 6px;letter-spacing:-.02em}
+header p{color:var(--muted);margin:0;max-width:720px}
+main{max-width:1100px;margin:0 auto;padding:20px 16px 48px;display:grid;grid-template-columns:1.5fr 1fr;gap:20px;align-items:start}
+@media (max-width:860px){main{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px}
+.card h2{font-size:15px;margin:0 0 14px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+fieldset{border:0;padding:0;margin:0 0 18px}
+legend{font-weight:600;margin-bottom:10px;font-size:15px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
+label{display:flex;flex-direction:column;font-size:13px;color:var(--muted);gap:4px}
+input,select{font:inherit;font-size:15px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:9px 10px;width:100%}
+input:focus,select:focus{outline:2px solid var(--accent);outline-offset:1px}
+.check{flex-direction:row;align-items:center;gap:8px;margin-top:22px}.check input{width:auto}
+.ejemplos{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+button{font:inherit;cursor:pointer;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:8px 12px;font-size:14px}
+button.primary{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:600;padding:12px 18px;width:100%;font-size:16px}
+.side{position:sticky;top:16px;display:flex;flex-direction:column;gap:20px}
+.resultado{text-align:center}
+.min{font-size:64px;font-weight:700;letter-spacing:-.03em;line-height:1;margin:8px 0}
+.min small{font-size:20px;font-weight:500;color:var(--muted)}
+.rango{color:var(--muted)}
+.aviso{background:var(--warn-soft);color:var(--warn);border-radius:10px;padding:10px 12px;font-size:14px;margin-top:12px;text-align:left}
+.detalle{font-size:13px;color:var(--muted);margin-top:10px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+td{padding:7px 0;border-bottom:1px solid var(--line)}td:last-child{text-align:right;font-weight:600}
+footer{max-width:1100px;margin:0 auto;padding:0 16px 40px;color:var(--muted);font-size:13px}
+a{color:var(--accent)}
+</style>
+</head>
+<body>
+<header>
+  <span class="tag">Aprendizaje Estadístico · UPAO 2026</span>
+  <h1>Estimador del tiempo de entrega de Food Delivery</h1>
+  <p>Ingresa los datos disponibles al registrar el pedido. El sistema estima el tiempo total de entrega con el modelo M5P entrenado en WEKA con 40 000 pedidos históricos.</p>
+</header>
+<main>
+  <form id="f" class="card" autocomplete="off">
+    <h2>Datos del pedido</h2>
+    <div class="ejemplos">
+      <button type="button" data-ej="0">Ejemplo 1: corto</button>
+      <button type="button" data-ej="1">Ejemplo 2: viernes con lluvia</button>
+      <button type="button" data-ej="2">Ejemplo 3: tormenta</button>
+    </div>
+    <fieldset><legend>Momento y contexto</legend><div class="grid">
+      <label>Día<select name="Day_of_Week">
+        <option value="Monday">Lunes</option><option value="Tuesday">Martes</option><option value="Wednesday">Miércoles</option><option value="Thursday">Jueves</option><option value="Friday">Viernes</option><option value="Saturday">Sábado</option><option value="Sunday">Domingo</option></select></label>
+      <label>Hora (0–23)<input name="Order_Hour" type="number" min="0" max="23" step="1" required></label>
+      <label>Clima<select name="Weather"><option value="Clear">Despejado</option><option value="Cloudy">Nublado</option><option value="Fog">Neblina</option><option value="Rain">Lluvia</option><option value="Storm">Tormenta</option></select></label>
+      <label>Tráfico<select name="Traffic_Level"><option value="Low">Bajo</option><option value="Moderate">Moderado</option><option value="High">Alto</option><option value="Severe">Severo</option></select></label>
+      <label class="check"><input name="Is_Festival" type="checkbox"> Día festivo</label>
+    </div></fieldset>
+    <fieldset><legend>Ruta</legend><div class="grid">
+      <label>Zona de recojo<select name="Pickup_Zone"><option value="CBD">Centro (CBD)</option><option value="Commercial">Comercial</option><option value="Industrial">Industrial</option><option value="Residential">Residencial</option><option value="Suburban">Suburbana</option></select></label>
+      <label>Zona de entrega<select name="Dropoff_Zone"><option value="CBD">Centro (CBD)</option><option value="Commercial">Comercial</option><option value="Industrial">Industrial</option><option value="Residential">Residencial</option><option value="Suburban">Suburbana</option></select></label>
+      <label>Distancia (km)<input name="Road_Distance_km" type="number" min="0" step="0.01" required></label>
+      <label>N.º de semáforos<input name="Number_of_Signals" type="number" min="0" step="1" required></label>
+    </div></fieldset>
+    <fieldset><legend>Repartidor</legend><div class="grid">
+      <label>Vehículo<select name="Vehicle_Type"><option value="Bike">Moto (Bike)</option><option value="Scooter">Scooter</option><option value="Electric Scooter">Scooter eléctrico</option><option value="Bicycle">Bicicleta</option></select></label>
+      <label>Experiencia (años)<input name="Rider_Experience_Years" type="number" min="0" step="0.1" required></label>
+      <label>Calificación (3.2–5)<input name="Rider_Rating" type="number" min="1" max="5" step="0.1" required></label>
+    </div></fieldset>
+    <fieldset><legend>Restaurante y pedido</legend><div class="grid">
+      <label>Tipo de cocina<select name="Cuisine_Type"><option>Bakery</option><option>Biryani</option><option>Burger</option><option>Cafe</option><option>Chinese</option><option>Desserts</option><option>North Indian</option><option>Pizza</option><option>South Indian</option></select></label>
+      <label>Calificación restaurante<input name="Restaurant_Rating" type="number" min="1" max="5" step="0.1" required></label>
+      <label>Carga del restaurante<select name="Restaurant_Load"><option value="Low">Baja</option><option value="Medium">Media</option><option value="High">Alta</option></select></label>
+      <label>Cantidad de ítems<input name="Order_Items" type="number" min="1" step="1" required></label>
+      <label>Preparación estimada (min)<input name="Preparation_Time_Min" type="number" min="0" step="1" required></label>
+      <label>Prioridad<select name="Delivery_Priority"><option value="Normal">Normal</option><option value="Priority">Prioritaria</option><option value="VIP">VIP</option></select></label>
+    </div></fieldset>
+    <button class="primary" type="submit">Estimar tiempo de entrega</button>
+  </form>
+  <div class="side">
+    <section class="card resultado" aria-live="polite">
+      <h2>Tiempo estimado</h2>
+      <div class="min" id="min">—</div>
+      <div class="rango" id="rango">Completa el formulario</div>
+      <div id="avisos"></div>
+      <div class="detalle" id="det"></div>
+    </section>
+    <section class="card">
+      <h2>Desempeño del modelo</h2>
+      <table>
+        <tr><td>Error absoluto medio (MAE)</td><td>2.33 min</td></tr>
+        <tr><td>RMSE</td><td>3.02 min</td></tr>
+        <tr><td>R²</td><td>0.993</td></tr>
+        <tr><td>Pedidos con error ≤ 5 min</td><td>91.0 %</td></tr>
+        <tr><td>Conjunto de prueba</td><td>10 000 pedidos</td></tr>
+      </table>
+    </section>
+  </div>
+</main>
+<footer>Modelo M5P (WEKA, minNumInstances = 4) con 94 reglas, exportado sin pérdida de precisión. Proyecto académico; las estimaciones son orientativas. <a href="https://github.com/denisseAlipio/food-delivery-proyecto-2026">Ver repositorio en GitHub</a></footer>
+<script src="modelo.js"></script>
+<script src="m5p.js"></script>
+<script>
+const EJ=[
+ {Day_of_Week:"Wednesday",Order_Hour:13,Is_Festival:false,Weather:"Clear",Pickup_Zone:"Commercial",Dropoff_Zone:"Residential",Vehicle_Type:"Bike",Rider_Experience_Years:5,Rider_Rating:4.5,Restaurant_Rating:4.3,Cuisine_Type:"Burger",Order_Items:2,Restaurant_Load:"Low",Preparation_Time_Min:15,Road_Distance_km:8,Traffic_Level:"Low",Number_of_Signals:4,Delivery_Priority:"Normal"},
+ {Day_of_Week:"Friday",Order_Hour:20,Is_Festival:false,Weather:"Rain",Pickup_Zone:"CBD",Dropoff_Zone:"Suburban",Vehicle_Type:"Scooter",Rider_Experience_Years:3,Rider_Rating:4.0,Restaurant_Rating:4.1,Cuisine_Type:"Pizza",Order_Items:3,Restaurant_Load:"High",Preparation_Time_Min:30,Road_Distance_km:25,Traffic_Level:"High",Number_of_Signals:12,Delivery_Priority:"Normal"},
+ {Day_of_Week:"Saturday",Order_Hour:19,Is_Festival:true,Weather:"Storm",Pickup_Zone:"Residential",Dropoff_Zone:"Industrial",Vehicle_Type:"Bicycle",Rider_Experience_Years:1,Rider_Rating:3.7,Restaurant_Rating:4.0,Cuisine_Type:"Biryani",Order_Items:5,Restaurant_Load:"High",Preparation_Time_Min:35,Road_Distance_km:40,Traffic_Level:"Severe",Number_of_Signals:15,Delivery_Priority:"Priority"}];
+const f=document.getElementById("f");
+function cargar(e){for(const k in e){const el=f.elements[k];if(el.type==="checkbox")el.checked=e[k];else el.value=e[k];}estimar();}
+function estimar(){
+  const d={};for(const el of f.elements){if(!el.name)continue;d[el.name]=el.type==="checkbox"?(el.checked?1:0):el.value;}
+  d.Is_Weekend=(d.Day_of_Week==="Saturday"||d.Day_of_Week==="Sunday")?1:0;
+  const r=M5P.predecir(window.MODELO,d), y=Math.min(Math.max(r.minutos,10),180);
+  document.getElementById("min").innerHTML=Math.round(y)+" <small>min</small>";
+  document.getElementById("rango").textContent="Rango orientativo: "+Math.round(Math.max(y-2.3,10))+" – "+Math.round(Math.min(y+2.3,180))+" min";
+  const av=[];
+  if(r.minutos>180)av.push("La estimación supera el máximo registrado: interpretarla como 180 minutos o más.");
+  const km=+d.Road_Distance_km;if(km<0.08||km>70.82)av.push("La distancia está fuera del rango de entrenamiento (0.08 – 70.82 km).");
+  if(+d.Preparation_Time_Min<5||+d.Preparation_Time_Min>51)av.push("El tiempo de preparación está fuera del rango de entrenamiento (5 – 51 min).");
+  document.getElementById("avisos").innerHTML=av.map(a=>'<div class="aviso">'+a+"</div>").join("");
+  document.getElementById("det").textContent="Valor del modelo: "+r.minutos.toFixed(1)+" min · regla LM"+r.regla+" de 94";
+}
+f.addEventListener("submit",e=>{e.preventDefault();estimar();});
+document.querySelectorAll("[data-ej]").forEach(b=>b.onclick=()=>cargar(EJ[+b.dataset.ej]));
+cargar(EJ[1]);
+</script>
+</body>
+</html>
