@@ -1,0 +1,35 @@
+name: Pruebas del sistema
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  pruebas:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar el código
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Instalar dependencias
+        run: pip install -r requirements.txt
+
+      - name: Pruebas del modelo (métricas, reglas y equivalencia con WEKA)
+        run: pytest tests -v
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Prueba de la app web (JavaScript vs. WEKA en 10 000 pedidos)
+        run: node tests/test_app_web.js
+
+      - name: Demostración de predicción
+        run: python src/predictor.py
